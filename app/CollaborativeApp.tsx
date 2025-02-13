@@ -1,6 +1,6 @@
 "use client";
 
-import { useOthers } from "@/liveblocks.config";
+import { useOthers } from "@liveblocks/react/suspense";
 
 const CollaborativeApp = () => {
   const others = useOthers();
