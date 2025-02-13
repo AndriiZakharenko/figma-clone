@@ -1,13 +1,5 @@
-
-import CollaborativeApp from "./CollaborativeApp";
-import Room from "./Room";
-
 const Page = () => {
-  return (
-    <Room>
-      <CollaborativeApp />
-    </Room>
-  );
+  return <h1 className="font-xl text-white">Hello world</h1>;
 };
 
 export default Page;
