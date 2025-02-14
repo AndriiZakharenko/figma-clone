@@ -46,6 +46,7 @@ export const {
   RoomProvider,
   useMyPresence,
   useStorage,
+  useOthers,
 
   // Other hooks
   // ...
