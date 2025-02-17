@@ -1,12 +1,17 @@
-"use client"
+"use client";
 
 import Live from "@/components/Live";
+import Navbar from "@/components/Navbar";
 
 const Page = () => {
   return (
-    <div>
-      <Live/>
-    </div>
+    <main className="h-screen overflow-hidden">
+      <Navbar />
+
+      <section className="flex h-full flex-row">
+        <Live />
+      </section>
+    </main>
   );
 };
 
