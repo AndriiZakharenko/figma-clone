@@ -7,6 +7,7 @@ import { NavbarProps } from "@/types/type";
 
 import ActiveUsers from "./users/ActiveUsers";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Navbar = ({ activeElement }: NavbarProps) => {
   return (
     <nav className="flex select-none items-center justify-between gap-4 bg-primary-black px-5 text-white">
