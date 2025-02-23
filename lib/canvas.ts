@@ -331,8 +331,8 @@ export const handleCanvasObjectScaling = ({
   const scaledHeight = selectedElement?.scaleY
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
       selectedElement?.height! * selectedElement?.scaleY
-    : selectedElement?.height;
-
+    : selectedElement?.height; 
+    // @ts-expect-error ts-expect-error
   setElementAttributes((prev) => ({
     ...prev,
     width: scaledWidth?.toFixed(0).toString() || "",
