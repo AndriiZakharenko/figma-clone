@@ -9,7 +9,7 @@ import RightSidebar from "@/components/RightSidebar";
 import { useEffect, useRef } from "react";
 import {
   handleCanvasMouseDown,
-  handleResize,
+  // handleResize,
   initializeFabric,
 } from "@/lib/canvas";
 
