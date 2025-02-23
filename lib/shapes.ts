@@ -105,7 +105,8 @@ export const handleImageUpload = ({
       img.scaleToHeight(200);
 
       canvas.current.add(img);
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
       img.objectId = uuidv4();
 
       shapeRef.current = img;
