@@ -25,23 +25,12 @@ const Page = () => {
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const syncShapeInStorage = useMutation(({ storage }, object) => {
-    // if the passed object is null, return
     if (!object) return;
     const { objectId } = object;
-
-    /**
-     * Turn Fabric object (kclass) into JSON format so that we can store it in the
-     * key-value store.
-     */
     const shapeData = object.toJSON();
     shapeData.objectId = objectId;
 
     const canvasObjects = storage.get("canvasObjects");
-    /**
-     * set is a method provided by Liveblocks that allows you to set a value
-     *
-     * set: https://liveblocks.io/docs/api-reference/liveblocks-client#LiveMap.set
-     */
     canvasObjects.set(objectId, shapeData);
   }, []);
 
