@@ -13,6 +13,8 @@ import {
   initializeFabric,
 } from "@/lib/canvas";
 import { ActiveElement } from "@/types/type";
+import { handleImageUpload } from "@/lib/shapes";
+import { useMutation } from "@/liveblocks.config";
 
 const Page = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -20,6 +22,28 @@ const Page = () => {
   const isDrawing = useRef(false);
   const shapeRef = useRef<fabric.Object | null>(null);
   const selectedShapeRef = useRef<string | null>("rectangle");
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const syncShapeInStorage = useMutation(({ storage }, object) => {
+    // if the passed object is null, return
+    if (!object) return;
+    const { objectId } = object;
+
+    /**
+     * Turn Fabric object (kclass) into JSON format so that we can store it in the
+     * key-value store.
+     */
+    const shapeData = object.toJSON();
+    shapeData.objectId = objectId;
+
+    const canvasObjects = storage.get("canvasObjects");
+    /**
+     * set is a method provided by Liveblocks that allows you to set a value
+     *
+     * set: https://liveblocks.io/docs/api-reference/liveblocks-client#LiveMap.set
+     */
+    canvasObjects.set(objectId, shapeData);
+  }, []);
 
   const [activeElement, setActiveElement] = useState<ActiveElement>({
     name: "",
@@ -54,8 +78,21 @@ const Page = () => {
   return (
     <main className="h-screen overflow-hidden">
       <Navbar
+      imageInputRef={imageInputRef}
         activeElement={activeElement}
         handleActiveElement={handleActiveElement}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        handleImageUpload={(e: any) => {
+          e.stopPropagation();
+
+          handleImageUpload({
+            file: e.target.files[0],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            canvas: fabricRef as any,
+            shapeRef,
+            syncShapeInStorage,
+          });
+        }}
       />
 
       <section className="flex h-full flex-row">
