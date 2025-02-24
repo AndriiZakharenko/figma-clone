@@ -21,6 +21,7 @@ const Page = () => {
   const shapeRef = useRef<fabric.Object | null>(null);
   const selectedShapeRef = useRef<string | null>("rectangle");
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeElement, setActiveElement] = useState<ActiveElement>({
     name: "",
     value: "",
