@@ -14,7 +14,7 @@ import {
 } from "@/lib/canvas";
 import { ActiveElement } from "@/types/type";
 import { handleImageUpload } from "@/lib/shapes";
-import { useMutation } from "@/liveblocks.config";
+import { useMutation, useStorage } from "@/liveblocks.config";
 
 const Page = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,6 +23,8 @@ const Page = () => {
   const shapeRef = useRef<fabric.Object | null>(null);
   const selectedShapeRef = useRef<string | null>("rectangle");
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const canvasObjects = useStorage((root) => root.canvasObjects);
 
   const syncShapeInStorage = useMutation(({ storage }, object) => {
     if (!object) return;
@@ -85,7 +87,7 @@ const Page = () => {
       />
 
       <section className="flex h-full flex-row">
-        <LeftSidebar />
+      <LeftSidebar allShapes={Array.from(canvasObjects)} />
 
         <Live canvasRef={canvasRef} />
 
