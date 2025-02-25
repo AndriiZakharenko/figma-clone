@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import RightSidebar from "@/components/RightSidebar";
 import { useEffect, useRef, useState } from "react";
 import {
+  handleCanvaseMouseMove,
   handleCanvasMouseDown,
   // handleResize,
   initializeFabric,
@@ -61,6 +62,18 @@ const Page = () => {
       });
     });
 
+    canvas.on("mouse:move", (options) => {
+      handleCanvaseMouseMove({
+        options,
+        canvas,
+        isDrawing,
+        selectedShapeRef,
+        shapeRef,
+        syncShapeInStorage,
+      });
+    });
+
+
     // window.addEventListener("resize", () => {
     //   handleResize({ fabricRef });
     // });
@@ -69,7 +82,7 @@ const Page = () => {
   return (
     <main className="h-screen overflow-hidden">
       <Navbar
-      imageInputRef={imageInputRef}
+        imageInputRef={imageInputRef}
         activeElement={activeElement}
         handleActiveElement={handleActiveElement}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -87,7 +100,7 @@ const Page = () => {
       />
 
       <section className="flex h-full flex-row">
-      <LeftSidebar allShapes={Array.from(canvasObjects)} />
+        <LeftSidebar allShapes={Array.from(canvasObjects)} />
 
         <Live canvasRef={canvasRef} />
 
