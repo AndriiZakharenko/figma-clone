@@ -1,5 +1,4 @@
-import { fabric } from "fabric"; 
-
+import { fabric } from "fabric";
 import { v4 as uuid4 } from "uuid";
 
 import {
@@ -331,7 +330,7 @@ export const handleCanvasObjectScaling = ({
   const scaledHeight = selectedElement?.scaleY
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
       selectedElement?.height! * selectedElement?.scaleY
-    : selectedElement?.height; 
+    : selectedElement?.height;
   setElementAttributes((prev) => ({
     ...prev,
     width: scaledWidth?.toFixed(0).toString() || "",

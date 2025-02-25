@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { fabric } from "fabric";
@@ -10,8 +11,11 @@ import { useEffect, useRef, useState } from "react";
 import {
   handleCanvaseMouseMove,
   handleCanvasMouseDown,
-  // handleResize,
+  handleCanvasMouseUp,
+  handleCanvasObjectModified,
+  handleResize,
   initializeFabric,
+  renderCanvas,
 } from "@/lib/canvas";
 import { ActiveElement } from "@/types/type";
 import { handleImageUpload } from "@/lib/shapes";
@@ -22,8 +26,9 @@ const Page = () => {
   const fabricRef = useRef<fabric.Canvas | null>(null);
   const isDrawing = useRef(false);
   const shapeRef = useRef<fabric.Object | null>(null);
-  const selectedShapeRef = useRef<string | null>("rectangle");
+  const selectedShapeRef = useRef<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const activeObjectRef = useRef<fabric.Object | null>(null);
 
   const canvasObjects = useStorage((root) => root.canvasObjects);
 
@@ -73,11 +78,39 @@ const Page = () => {
       });
     });
 
+    canvas.on("mouse:up", () => {
+      handleCanvasMouseUp({
+        canvas,
+        isDrawing,
+        shapeRef,
+        activeObjectRef,
+        selectedShapeRef,
+        syncShapeInStorage,
+        setActiveElement,
+      });
+    });
 
-    // window.addEventListener("resize", () => {
-    //   handleResize({ fabricRef });
-    // });
+    canvas.on("object:modified", (options) => {
+      handleCanvasObjectModified({
+        options,
+        syncShapeInStorage,
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      handleResize({
+        canvas: fabricRef.current,
+      });
+    });
   }, []);
+
+  useEffect(() => {
+    renderCanvas({
+      fabricRef,
+      canvasObjects,
+      activeObjectRef,
+    });
+  }, [canvasObjects]);
 
   return (
     <main className="h-screen overflow-hidden">
@@ -85,13 +118,11 @@ const Page = () => {
         imageInputRef={imageInputRef}
         activeElement={activeElement}
         handleActiveElement={handleActiveElement}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         handleImageUpload={(e: any) => {
           e.stopPropagation();
 
           handleImageUpload({
             file: e.target.files[0],
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             canvas: fabricRef as any,
             shapeRef,
             syncShapeInStorage,
