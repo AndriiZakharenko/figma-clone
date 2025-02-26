@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -19,11 +20,14 @@ import {
 } from "@/lib/canvas";
 import { ActiveElement } from "@/types/type";
 import { handleImageUpload } from "@/lib/shapes";
-import { useMutation, useStorage } from "@/liveblocks.config";
+import { useMutation, useRedo, useStorage, useUndo } from "@/liveblocks.config";
 import { defaultNavElement } from "@/constants";
-import { handleDelete } from "@/lib/key-events";
+import { handleDelete, handleKeyDown } from "@/lib/key-events";
 
 const Page = () => {
+  const undo = useUndo();
+  const redo = useRedo();
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
   const isDrawing = useRef(false);
@@ -149,6 +153,38 @@ const Page = () => {
         canvas: fabricRef.current,
       });
     });
+
+    window.addEventListener("keydown", (e) =>
+      handleKeyDown({
+        e,
+        canvas: fabricRef.current,
+        undo,
+        redo,
+        syncShapeInStorage,
+        deleteShapeFromStorage,
+      })
+    );
+
+    return () => {
+      canvas.dispose();
+
+      window.removeEventListener("resize", () => {
+        handleResize({
+          canvas: null,
+        });
+      });
+
+      window.removeEventListener("keydown", (e) =>
+        handleKeyDown({
+          e,
+          canvas: fabricRef.current,
+          undo,
+          redo,
+          syncShapeInStorage,
+          deleteShapeFromStorage,
+        })
+      );
+    };
   }, []);
 
   useEffect(() => {
