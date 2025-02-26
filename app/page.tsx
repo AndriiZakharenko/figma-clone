@@ -20,6 +20,8 @@ import {
 import { ActiveElement } from "@/types/type";
 import { handleImageUpload } from "@/lib/shapes";
 import { useMutation, useStorage } from "@/liveblocks.config";
+import { defaultNavElement } from "@/constants";
+import { handleDelete } from "@/lib/key-events";
 
 const Page = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -48,10 +50,55 @@ const Page = () => {
     icon: "",
   });
 
+  const deleteAllShapes = useMutation(({ storage }) => {
+    const canvasObjects = storage.get("canvasObjects");
+
+    if (!canvasObjects || canvasObjects.size === 0) return true;
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for (const [key, value] of canvasObjects.entries()) {
+      canvasObjects.delete(key);
+    }
+
+    return canvasObjects.size === 0;
+  }, []);
+
+  const deleteShapeFromStorage = useMutation(({ storage }, shapeId) => {
+    const canvasObjects = storage.get("canvasObjects");
+    canvasObjects.delete(shapeId);
+  }, []);
+
   const handleActiveElement = (elem: ActiveElement) => {
     setActiveElement(elem);
 
-    selectedShapeRef.current = elem?.value as string;
+    switch (elem?.value) {
+      case "reset":
+        deleteAllShapes();
+        fabricRef.current?.clear();
+        setActiveElement(defaultNavElement);
+        break;
+
+      case "delete":
+        handleDelete(fabricRef.current as any, deleteShapeFromStorage);
+        setActiveElement(defaultNavElement);
+        break;
+
+      case "image":
+        imageInputRef.current?.click();
+        isDrawing.current = false;
+
+        if (fabricRef.current) {
+          fabricRef.current.isDrawingMode = false;
+        }
+        break;
+
+      case "comments":
+        break;
+
+      default:
+        selectedShapeRef.current = elem?.value as string;
+        break;
+    }
   };
 
   useEffect(() => {
