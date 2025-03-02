@@ -40,7 +40,12 @@ const RightSidebar = ({
         height={elementAttributes.height}
         handleInputChange={handleInputChange}
       />
-      <Text />
+      <Text
+        fontFamily={elementAttributes.fontFamily}
+        fontSize={elementAttributes.fontSize}
+        fontWeight={elementAttributes.fontWeight}
+        handleInputChange={handleInputChange}
+      />
       <Color />
       <Color />
       <Export />
