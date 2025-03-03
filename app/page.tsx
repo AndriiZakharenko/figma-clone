@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -16,6 +17,7 @@ import {
   handleCanvasObjectModified,
   handleCanvasObjectScaling,
   handleCanvasSelectionCreated,
+  handlePathCreated,
   handleResize,
   initializeFabric,
   renderCanvas,
@@ -72,7 +74,6 @@ const Page = () => {
 
     if (!canvasObjects || canvasObjects.size === 0) return true;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const [key, value] of canvasObjects.entries()) {
       canvasObjects.delete(key);
     }
@@ -173,6 +174,13 @@ const Page = () => {
       handleCanvasObjectScaling({
         options,
         setElementAttributes,
+      });
+    });
+
+    canvas.on("path:created", (options) => {
+      handlePathCreated({
+        options,
+        syncShapeInStorage,
       });
     });
 
