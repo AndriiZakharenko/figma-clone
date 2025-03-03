@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useBroadcastEvent,
   useEventListener,
   useMyPresence,
   useOthers,
@@ -12,7 +13,7 @@ import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type";
 import ReactionSelector from "./reaction/ReactionButton";
 import FlyingReaction from "./reaction/FlyingReaction";
 import useInterval from "@/hooks/useInterval";
-import { useBroadcastEvent } from "@liveblocks/react";
+import { Comments } from "./comments/Comments";
 
 type Props = {
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
@@ -160,7 +161,7 @@ const Live = ({ canvasRef }: Props) => {
       onPointerLeave={handlePointerLeave}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
-      className="h-[100vh] w-full flex justify-center items-center text-center"
+      className="realtive h-full w-full flex flex-1 justify-center items-center"
     >
       <canvas ref={canvasRef} />
 
@@ -189,6 +190,7 @@ const Live = ({ canvasRef }: Props) => {
         />
       )}
       <LiveCursors others={others} />
+      <Comments />
     </div>
   );
 };
