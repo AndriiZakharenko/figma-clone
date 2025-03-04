@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useMaxZIndex } from "@/lib/useMaxZIndex";
-import { useCreateThread } from "@/liveblocks.config";
 import {
   FormEvent,
   ReactNode,
@@ -11,9 +9,14 @@ import {
   useRef,
   useState,
 } from "react";
-import { ComposerSubmitComment } from "@liveblocks/react-comments/primitives";
+
 import { Slot } from "@radix-ui/react-slot";
 import * as Portal from "@radix-ui/react-portal";
+import { ComposerSubmitComment } from "@liveblocks/react-comments/primitives";
+
+import { useCreateThread } from "@/liveblocks.config";
+import { useMaxZIndex } from "@/lib/useMaxZIndex";
+
 import PinnedComposer from "./PinnedComposer";
 import NewThreadCursor from "./NewThreadCursor";
 

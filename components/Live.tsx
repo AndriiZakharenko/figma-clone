@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -30,18 +31,20 @@ type Props = {
 
 const Live = ({ canvasRef, undo, redo }: Props) => {
   const others = useOthers();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const [{ cursor }, updateMyPresence] = useMyPresence() as any;
+
+  const broadcast = useBroadcastEvent();
+  const [reactions, setReactions] = useState<Reaction[]>([]);
+
   const [cursorState, setCursorState] = useState<CursorState>({
     mode: CursorMode.Hidden,
   });
-  const [reactions, setReactions] = useState<Reaction[]>([]);
+  
 
   const setReaction = useCallback((reaction: string) => {
     setCursorState({ mode: CursorMode.Reaction, reaction, isPressed: false });
   }, []);
-
-  const broadcast = useBroadcastEvent();
 
   useInterval(() => {
     setReactions((reactions) =>
@@ -85,6 +88,37 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
       ])
     );
   });
+
+  useEffect(() => {
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "/") {
+        setCursorState({
+          mode: CursorMode.Chat,
+          previousMessage: null,
+          message: "",
+        });
+      } else if (e.key === "Escape") {
+        updateMyPresence({ message: "" });
+        setCursorState({ mode: CursorMode.Hidden });
+      } else if (e.key === "e") {
+        setCursorState({ mode: CursorMode.ReactionSelector });
+      }
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "/") {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [updateMyPresence]);
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent) => {
@@ -132,36 +166,7 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
     );
   }, [cursorState.mode, setCursorState]);
 
-  useEffect(() => {
-    const onKeyUp = (e: KeyboardEvent) => {
-      if (e.key === "/") {
-        setCursorState({
-          mode: CursorMode.Chat,
-          previousMessage: null,
-          message: "",
-        });
-      } else if (e.key === "Escape") {
-        updateMyPresence({ message: "" });
-        setCursorState({ mode: CursorMode.Hidden });
-      } else if (e.key === "e") {
-        setCursorState({ mode: CursorMode.ReactionSelector });
-      }
-    };
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "/") {
-        e.preventDefault();
-      }
-    };
-
-    window.addEventListener("keyup", onKeyUp);
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      window.removeEventListener("keyup", onKeyUp);
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [updateMyPresence]);
+  
 
   const handleContextMenuClick = useCallback((key: string) => {
     switch (key) {
