@@ -1,14 +1,16 @@
 "use client";
 
-import { useMaxZIndex } from "@/lib/useMaxZIndex";
+import { useCallback, useRef } from "react";
+import { ThreadData } from "@liveblocks/client";
+
 import {
   ThreadMetadata,
   useEditThreadMetadata,
   useThreads,
   useUser,
 } from "@/liveblocks.config";
-import { ThreadData } from "@liveblocks/client";
-import { useCallback, useRef } from "react";
+
+import { useMaxZIndex } from "@/lib/useMaxZIndex";
 import { PinnedThread } from "./PinnedThread";
 
 type OverlayThreadProps = {

@@ -1,5 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+"use client";
+
 import { ThreadMetadata } from "@/liveblocks.config";
 import { ThreadData } from "@liveblocks/client";
 import { Thread } from "@liveblocks/react-comments";
