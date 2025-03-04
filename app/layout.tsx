@@ -1,9 +1,9 @@
 import { Work_Sans } from "next/font/google";
 import "./globals.css";
 
-import { TooltipProvider } from "@/ui/tooltip";
 
 import Room from "./Room";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata = {
   title: "Figma Clone",

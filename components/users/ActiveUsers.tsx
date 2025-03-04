@@ -1,44 +1,42 @@
-import { useOthers, useSelf } from "@/liveblocks.config";
-import Avatar from "./Avatar";
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client";
 
-import styles from "./index.module.css";
-import { generateRandomName } from "@/lib/utils";
 import { useMemo } from "react";
 
+import { generateRandomName } from "@/lib/utils";
+import { useOthers, useSelf } from "@/liveblocks.config";
+
+import Avatar from "./Avatar";
+
 const ActiveUsers = () => {
-  const users = useOthers();
+  const others = useOthers();
   const currentUser = useSelf();
 
-  const hasMoreUsers = users.length > 2;
-
   const memoizedUsers = useMemo(() => {
-    return (
-      <div className="flex items-center justify-center gap-1 py-2">
-        <div className="flex pl-3">
-          {currentUser && (
-            <Avatar
-              name="You"
-              otherStyles="border-[3px] border-primary-green"
-            />
-          )}
-          {users.slice(0, 3).map(({ connectionId }) => {
-            return (
-              <Avatar
-                key={connectionId}
-                name={generateRandomName()}
-                otherStyles="-ml-3"
-              />
-            );
-          })}
+    const hasMoreUsers = others.length > 2;
 
-          {hasMoreUsers && (
-            <div className={styles.more}>+{users.length - 3}</div>
-          )}
-        </div>
+    return (
+      <div className="flex items-center justify-center gap-1">
+        {currentUser && (
+          <Avatar name="You" otherStyles="border-[3px] border-primary-green" />
+        )}
+
+        {others.slice(0, 2).map(({ connectionId }) => (
+          <Avatar
+            key={connectionId}
+            name={generateRandomName()}
+            otherStyles="-ml-3"
+          />
+        ))}
+
+        {hasMoreUsers && (
+          <div className="z-10 -ml-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary-black">
+            +{others.length - 2}
+          </div>
+        )}
       </div>
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [users.length]);
+  }, [others.length]);
 
   return memoizedUsers;
 };
