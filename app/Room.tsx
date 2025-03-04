@@ -3,8 +3,8 @@
 import { LiveMap } from "@liveblocks/client";
 import { ClientSideSuspense } from "@liveblocks/react";
 
-import { RoomProvider } from "@/liveblocks.config";
 import Loader from "@/components/Loader";
+import { RoomProvider } from "@/liveblocks.config";
 
 const Room = ({ children }: { children: React.ReactNode }) => {
   return (

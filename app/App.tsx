@@ -4,33 +4,56 @@
 "use client";
 
 import { fabric } from "fabric";
-
-import LeftSidebar from "@/components/LeftSidebar";
-import Live from "@/components/Live";
-import Navbar from "@/components/Navbar";
-import RightSidebar from "@/components/RightSidebar";
 import { useEffect, useRef, useState } from "react";
+import { useMutation, useRedo, useStorage, useUndo } from "@/liveblocks.config";
+
 import {
   handleCanvaseMouseMove,
   handleCanvasMouseDown,
   handleCanvasMouseUp,
   handleCanvasObjectModified,
+  handleCanvasObjectMoving,
   handleCanvasObjectScaling,
   handleCanvasSelectionCreated,
+  handleCanvasZoom,
   handlePathCreated,
   handleResize,
   initializeFabric,
   renderCanvas,
 } from "@/lib/canvas";
-import { ActiveElement, Attributes } from "@/types/type";
-import { handleImageUpload } from "@/lib/shapes";
-import { useMutation, useRedo, useStorage, useUndo } from "@/liveblocks.config";
-import { defaultNavElement } from "@/constants";
+
 import { handleDelete, handleKeyDown } from "@/lib/key-events";
 
-const Page = () => {
+import LeftSidebar from "@/components/LeftSidebar";
+import Live from "@/components/Live";
+import Navbar from "@/components/Navbar";
+import RightSidebar from "@/components/RightSidebar";
+
+import { handleImageUpload } from "@/lib/shapes";
+import { defaultNavElement } from "@/constants";
+
+import { ActiveElement, Attributes } from "@/types/type";
+
+const Home = () => {
   const undo = useUndo();
   const redo = useRedo();
+
+  const canvasObjects = useStorage((root) => root.canvasObjects);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fabricRef = useRef<fabric.Canvas | null>(null);
+  const isDrawing = useRef(false);
+  const shapeRef = useRef<fabric.Object | null>(null);
+  const selectedShapeRef = useRef<string | null>(null);
+  const activeObjectRef = useRef<fabric.Object | null>(null);
+  const isEditingRef = useRef(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const [activeElement, setActiveElement] = useState<ActiveElement>({
+    name: "",
+    value: "",
+    icon: "",
+  });
 
   const [elementAttributes, setElementAttributes] = useState<Attributes>({
     width: "",
@@ -42,32 +65,10 @@ const Page = () => {
     stroke: "#aabbcc",
   });
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const fabricRef = useRef<fabric.Canvas | null>(null);
-  const isDrawing = useRef(false);
-  const shapeRef = useRef<fabric.Object | null>(null);
-  const selectedShapeRef = useRef<string | null>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
-  const activeObjectRef = useRef<fabric.Object | null>(null);
-  const isEditingRef = useRef(false);
-
-  const canvasObjects = useStorage((root) => root.canvasObjects);
-
-  const syncShapeInStorage = useMutation(({ storage }, object) => {
-    if (!object) return;
-    const { objectId } = object;
-    const shapeData = object.toJSON();
-    shapeData.objectId = objectId;
-
+  const deleteShapeFromStorage = useMutation(({ storage }, shapeId) => {
     const canvasObjects = storage.get("canvasObjects");
-    canvasObjects.set(objectId, shapeData);
+    canvasObjects.delete(shapeId);
   }, []);
-
-  const [activeElement, setActiveElement] = useState<ActiveElement>({
-    name: "",
-    value: "",
-    icon: "",
-  });
 
   const deleteAllShapes = useMutation(({ storage }) => {
     const canvasObjects = storage.get("canvasObjects");
@@ -81,9 +82,14 @@ const Page = () => {
     return canvasObjects.size === 0;
   }, []);
 
-  const deleteShapeFromStorage = useMutation(({ storage }, shapeId) => {
+  const syncShapeInStorage = useMutation(({ storage }, object) => {
+    if (!object) return;
+    const { objectId } = object;
+    const shapeData = object.toJSON();
+    shapeData.objectId = objectId;
+
     const canvasObjects = storage.get("canvasObjects");
-    canvasObjects.delete(shapeId);
+    canvasObjects.set(objectId, shapeData);
   }, []);
 
   const handleActiveElement = (elem: ActiveElement) => {
@@ -122,7 +128,7 @@ const Page = () => {
   useEffect(() => {
     const canvas = initializeFabric({ canvasRef, fabricRef });
 
-    canvas.on("mouse: down", (options) => {
+    canvas.on("mouse:down", (options) => {
       handleCanvasMouseDown({
         options,
         canvas,
@@ -155,10 +161,23 @@ const Page = () => {
       });
     });
 
+    canvas.on("path:created", (options) => {
+      handlePathCreated({
+        options,
+        syncShapeInStorage,
+      });
+    });
+
     canvas.on("object:modified", (options) => {
       handleCanvasObjectModified({
         options,
         syncShapeInStorage,
+      });
+    });
+
+    canvas?.on("object:moving", (options) => {
+      handleCanvasObjectMoving({
+        options,
       });
     });
 
@@ -177,10 +196,10 @@ const Page = () => {
       });
     });
 
-    canvas.on("path:created", (options) => {
-      handlePathCreated({
+    canvas.on("mouse:wheel", (options) => {
+      handleCanvasZoom({
         options,
-        syncShapeInStorage,
+        canvas,
       });
     });
 
@@ -221,7 +240,7 @@ const Page = () => {
         })
       );
     };
-  }, []);
+  }, [canvasRef]);
 
   useEffect(() => {
     renderCanvas({
@@ -236,7 +255,6 @@ const Page = () => {
       <Navbar
         imageInputRef={imageInputRef}
         activeElement={activeElement}
-        handleActiveElement={handleActiveElement}
         handleImageUpload={(e: any) => {
           e.stopPropagation();
 
@@ -247,6 +265,7 @@ const Page = () => {
             syncShapeInStorage,
           });
         }}
+        handleActiveElement={handleActiveElement}
       />
 
       <section className="flex h-full flex-row">
@@ -267,4 +286,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default Home;
