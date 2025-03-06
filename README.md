@@ -18,7 +18,7 @@ A web-based design tool that mimics the core features of Figma, enabling real-ti
 
 ## 🛠️ Tools & Dependencies  
 - **ESLint** – Enforcing code consistency and best practices  
-- **Vite** – High-performance build tool for a smooth development experience  
+- **Turbopack** – Lightning-fast bundling and performance optimization
 
 ## 🌐 Demo Link  
 🔗 [Demo](https://andrii-figma-clone.vercel.app/)  
